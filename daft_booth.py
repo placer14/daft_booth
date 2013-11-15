@@ -9,60 +9,127 @@ from Adafruit_MCP230xx import Adafruit_MCP230XX
 
 FULL_PATH = './'
 ENABLE = 1
+ALT_SOUND_TOGGLE = False
+HALT_FURTHER_TOGGLE = False
+SOUNDBOARD_ADDR = 0x20
+CONTROL_ADDR = 0x21
 
 def main():
-    setup()
+    global HALT_FURTHER_TOGGLE
     pygame.mixer.music.load(FULL_PATH + 'sounds/hbfs/beat_hbfs.mp3')
-    work_it_A = load_sound(FULL_PATH + 'sounds/hbfs/101_work_it.wav')
-    harder_A = load_sound(FULL_PATH + 'sounds/hbfs/102_harder.wav')
-    make_it_A = load_sound(FULL_PATH + 'sounds/hbfs/103_make_it.wav')
-    better_A = load_sound(FULL_PATH + 'sounds/hbfs/104_better.wav')
-    do_it_A = load_sound(FULL_PATH + 'sounds/hbfs/105_do_it.wav')
-    faster_A = load_sound(FULL_PATH + 'sounds/hbfs/106_faster.wav')
-    makes_us_A = load_sound(FULL_PATH + 'sounds/hbfs/107_makes_us.wav')
-    stronger_A = load_sound(FULL_PATH + 'sounds/hbfs/108_stronger.wav')
 
     pygame.mixer.music.play(-1)
     soundboard = setup_soundboard_bus()
+    control = setup_control_bus()
 
     print('Running...')
     try:
         while True:
+            if (control.input(0) == 0):
+                toggle_alt_sounds()
+            else:
+                HALT_FURTHER_TOGGLE = False
             if (soundboard.input(0) == 0):
-                work_it_A.play()
+                work_it().play()
             if (soundboard.input(1) == 0):
-                harder_A.play()
+                harder().play()
             if (soundboard.input(2) == 0):
-                make_it_A.play()
+                make_it().play()
             if (soundboard.input(3) == 0):
-                better_A.play()
+                better().play()
             if (soundboard.input(4) == 0):
-                do_it_A.play()
+                do_it().play()
             if (soundboard.input(5) == 0):
-                faster_A.play()
+                faster().play()
             if (soundboard.input(6) == 0):
-                makes_us_A.play()
+                makes_us().play()
             if (soundboard.input(7) == 0):
-                stronger_A.play()
+                stronger().play()
             if (soundboard.input(8) == 0):
-                work_it_A.play()
+                more_than().play()
             if (soundboard.input(9) == 0):
-                work_it_A.play()
+                ever().play()
             if (soundboard.input(10) == 0):
-                work_it_A.play()
+                hour().play()
             if (soundboard.input(11) == 0):
-                work_it_A.play()
+                after().play()
             if (soundboard.input(12) == 0):
-                work_it_A.play()
+                our().play()
             if (soundboard.input(13) == 0):
-                work_it_A.play()
+                work_is().play()
             if (soundboard.input(14) == 0):
-                work_it_A.play()
+                never().play()
             if (soundboard.input(15) == 0):
-                work_it_A.play()
+                over().play()
     except KeyboardInterrupt:
         cleanup()
         exit(1)
+
+def work_it():
+    return get_sound(work_it_A, work_it_B)
+
+def harder():
+    return get_sound(harder_A, harder_B)
+
+def make_it():
+    return get_sound(make_it_A, make_it_B)
+
+def better():
+    return get_sound(better_A, better_B)
+
+def do_it():
+    return get_sound(do_it_A, do_it_B)
+
+def faster():
+    return get_sound(faster_A, faster_B)
+
+def makes_us():
+    return get_sound(makes_us_A, makes_us_B)
+
+def stronger():
+    return get_sound(stronger_A, stronger_B)
+
+def more_than():
+    return get_sound(more_than_A, more_than_B)
+
+def ever():
+    return get_sound(ever_A, ever_B)
+
+def hour():
+    return get_sound(hour_A, hour_B)
+
+def after():
+    return get_sound(after_A, after_B)
+
+def our():
+    return get_sound(our_A, our_B)
+
+def work_is():
+    return get_sound(work_is_A, work_is_B)
+
+def never():
+    return get_sound(never_A, never_B)
+
+def over():
+    return get_sound(over_A, over_B)
+
+def get_sound(sound_A, sound_B):
+    if (is_alt_sound_toggled() == False):
+        return sound_A
+    else:
+        return sound_B
+
+def toggle_alt_sounds():
+    global ALT_SOUND_TOGGLE
+    global HALT_FURTHER_TOGGLE
+    if HALT_FURTHER_TOGGLE == False:
+        ALT_SOUND_TOGGLE = False if (ALT_SOUND_TOGGLE == True) else True
+        HALT_FURTHER_TOGGLE = True
+        print("Sound toggle is %s" % ALT_SOUND_TOGGLE)
+    return ALT_SOUND_TOGGLE
+    
+def is_alt_sound_toggled():
+    return ALT_SOUND_TOGGLE
 
 def load_sound(file):
     sound = pygame.mixer.Sound(file)
@@ -79,7 +146,7 @@ def setup():
     return screen
 
 def setup_soundboard_bus():
-    soundboard = Adafruit_MCP230XX(address=0x21, num_gpios=16)
+    soundboard = Adafruit_MCP230XX(address=SOUNDBOARD_ADDR, num_gpios=16)
     soundboard.pullup(0, ENABLE)
     soundboard.pullup(1, ENABLE)
     soundboard.pullup(2, ENABLE)
@@ -97,9 +164,47 @@ def setup_soundboard_bus():
     soundboard.pullup(14, ENABLE)
     soundboard.pullup(15, ENABLE)
     return soundboard
+
+def setup_control_bus():
+    control = Adafruit_MCP230XX(address=CONTROL_ADDR, num_gpios=16)
+    control.pullup(0, ENABLE)
+    return control
     
 def cleanup():
     GPIO.cleanup()
 
 if __name__ == '__main__':
+    setup()
+    work_it_A = load_sound(FULL_PATH + 'sounds/hbfs/101_work_it.wav')
+    harder_A = load_sound(FULL_PATH + 'sounds/hbfs/102_harder.wav')
+    make_it_A = load_sound(FULL_PATH + 'sounds/hbfs/103_make_it.wav')
+    better_A = load_sound(FULL_PATH + 'sounds/hbfs/104_better.wav')
+    do_it_A = load_sound(FULL_PATH + 'sounds/hbfs/105_do_it.wav')
+    faster_A = load_sound(FULL_PATH + 'sounds/hbfs/106_faster.wav')
+    makes_us_A = load_sound(FULL_PATH + 'sounds/hbfs/107_makes_us.wav')
+    stronger_A = load_sound(FULL_PATH + 'sounds/hbfs/108_stronger.wav')
+    more_than_A = load_sound(FULL_PATH + 'sounds/hbfs/109_more_than.wav')
+    ever_A = load_sound(FULL_PATH + 'sounds/hbfs/110_ever.wav')
+    hour_A = load_sound(FULL_PATH + 'sounds/hbfs/111_hour.wav')
+    after_A = load_sound(FULL_PATH + 'sounds/hbfs/112_after.wav')
+    our_A = load_sound(FULL_PATH + 'sounds/hbfs/113_our.wav')
+    work_is_A = load_sound(FULL_PATH + 'sounds/hbfs/114_work_is.wav')
+    never_A = load_sound(FULL_PATH + 'sounds/hbfs/115_never.wav')
+    over_A = load_sound(FULL_PATH + 'sounds/hbfs/116_over.wav')
+    work_it_B = load_sound(FULL_PATH + 'sounds/hbfs/201_work_it.wav')
+    harder_B = load_sound(FULL_PATH + 'sounds/hbfs/202_harder.wav')
+    make_it_B = load_sound(FULL_PATH + 'sounds/hbfs/203_make_it.wav')
+    better_B = load_sound(FULL_PATH + 'sounds/hbfs/204_better.wav')
+    do_it_B = load_sound(FULL_PATH + 'sounds/hbfs/205_do_it.wav')
+    faster_B = load_sound(FULL_PATH + 'sounds/hbfs/206_faster.wav')
+    makes_us_B = load_sound(FULL_PATH + 'sounds/hbfs/207_makes_us.wav')
+    stronger_B = load_sound(FULL_PATH + 'sounds/hbfs/208_stronger.wav')
+    more_than_B = load_sound(FULL_PATH + 'sounds/hbfs/209_more_than.wav')
+    ever_B = load_sound(FULL_PATH + 'sounds/hbfs/210_ever.wav')
+    hour_B = load_sound(FULL_PATH + 'sounds/hbfs/211_hour.wav')
+    after_B = load_sound(FULL_PATH + 'sounds/hbfs/212_after.wav')
+    our_B = load_sound(FULL_PATH + 'sounds/hbfs/213_our.wav')
+    work_is_B = load_sound(FULL_PATH + 'sounds/hbfs/214_work_is.wav')
+    never_B = load_sound(FULL_PATH + 'sounds/hbfs/215_never.wav')
+    over_B = load_sound(FULL_PATH + 'sounds/hbfs/216_over.wav')
     main()
