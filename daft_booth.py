@@ -15,7 +15,6 @@ SOUNDBOARD_ADDR = 0x20
 CONTROL_ADDR = 0x21
 
 def main():
-    global HALT_FURTHER_TOGGLE
     pygame.mixer.music.load(FULL_PATH + 'sounds/hbfs/beat_hbfs.mp3')
 
     pygame.mixer.music.play(-1)
@@ -25,10 +24,6 @@ def main():
     print('Running...')
     try:
         while True:
-            if (control.input(0) == 0):
-                toggle_alt_sounds()
-            else:
-                HALT_FURTHER_TOGGLE = False
             if (soundboard.input(0) == 0):
                 work_it().play()
             if (soundboard.input(1) == 0):
@@ -61,9 +56,47 @@ def main():
                 never().play()
             if (soundboard.input(15) == 0):
                 over().play()
+            check_toggle_sounds(control)
+            check_toggle_background_track(control)
+            print(pygame.mixer.music.get_busy())
     except KeyboardInterrupt:
         cleanup()
         exit(1)
+
+def check_toggle_sounds(control):
+    global HALT_FURTHER_TOGGLE
+    if (control.input(0) == 0):
+        toggle_alt_sounds()
+    else:
+        HALT_FURTHER_TOGGLE = False
+
+def toggle_alt_sounds():
+    global ALT_SOUND_TOGGLE
+    global HALT_FURTHER_TOGGLE
+    if HALT_FURTHER_TOGGLE == False:
+        ALT_SOUND_TOGGLE = False if (ALT_SOUND_TOGGLE == True) else True
+        HALT_FURTHER_TOGGLE = True
+        print("Sound toggle is %s" % ALT_SOUND_TOGGLE)
+    return ALT_SOUND_TOGGLE
+
+def check_toggle_background_track(control):
+    global HALT_FURTHER_PAUSE_PLAY
+    if (control.input(1) == 0):
+        toggle_background_track()
+    else:
+        HALT_FURTHER_PAUSE_PLAY = False
+
+def toggle_background_track():
+    global HALT_FURTHER_PAUSE_PLAY
+    if (HALT_FURTHER_PAUSE_PLAY == False):
+        if (pygame.mixer.music.get_busy() == 1):
+            pygame.mixer.music.stop()
+            HALT_FURTHER_PAUSE_PLAY = True
+            print("BG track is stopped")
+        else:
+            pygame.mixer.music.play(-1)
+            HALT_FURTHER_PAUSE_PLAY = True
+            print("BG track is started")
 
 def work_it():
     return get_sound(work_it_A, work_it_B)
@@ -118,15 +151,6 @@ def get_sound(sound_A, sound_B):
         return sound_A
     else:
         return sound_B
-
-def toggle_alt_sounds():
-    global ALT_SOUND_TOGGLE
-    global HALT_FURTHER_TOGGLE
-    if HALT_FURTHER_TOGGLE == False:
-        ALT_SOUND_TOGGLE = False if (ALT_SOUND_TOGGLE == True) else True
-        HALT_FURTHER_TOGGLE = True
-        print("Sound toggle is %s" % ALT_SOUND_TOGGLE)
-    return ALT_SOUND_TOGGLE
     
 def is_alt_sound_toggled():
     return ALT_SOUND_TOGGLE
@@ -168,6 +192,7 @@ def setup_soundboard_bus():
 def setup_control_bus():
     control = Adafruit_MCP230XX(address=CONTROL_ADDR, num_gpios=16)
     control.pullup(0, ENABLE)
+    control.pullup(1, ENABLE)
     return control
     
 def cleanup():
