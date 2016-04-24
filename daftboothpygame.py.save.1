@@ -1,0 +1,227 @@
+
+#Daft Booth v0.2
+#Hacklab North Boynton
+
+import pygame, sys
+#import time
+from pygame.locals import *
+import pygame.mixer
+from RPi import GPIO
+from Adafruit_MCP230xx import Adafruit_MCP230XX
+
+pygame.init()
+pygame.mixer.init()
+pygame.font.init()
+
+
+
+
+FPS = 24
+clock = pygame.time.Clock()
+#text
+dafttext = pygame.font.Font("banshee.ttf", 45) 
+#dbtext = pygame.font.SysFont("monospace", 20)
+#dbtext.set_bold(True)
+boothlabel = pygame.font.SysFont("monospace", 26)
+ 
+size = (500, 500)
+screen = pygame.display.set_mode((size))
+bounds = screen.get_rect()
+# set up the colors
+BLACK = (  0,   0,   0)
+WHITE = (255, 255, 255)
+RED   = (255,   0,   0)
+GREEN = (124, 252,   0)
+BLUE  = (30, 144, 255 )
+PURPLE = (148, 0, 211)
+ORANGE = (255, 140, 0)
+YELLOW = (255, 255, 0)
+
+
+
+rect = pygame.Rect(30, 30, 15, 15)
+rectA = pygame.Rect(45, 30, 15, 15)
+rectB = pygame.Rect(60, 30, 15, 15)
+rectC = pygame.Rect(75, 30, 15, 15)
+rect2 = pygame.Rect(100, 45, 64, 64)
+
+
+
+
+
+#image = pygame.image.load("image.png")
+
+pygame.display.set_caption('DAFT BOOTH')
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+workit = pygame.mixer.Sound("sounds/hbfs/101_work_it.wav")
+harder = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+makeit = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+better = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+doit = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+faster = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+makes = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+stronger = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+morethan = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+ever = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+hour = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+after = pygame.mixer.Sound("sounds/hbfs/101_work_it.wav")
+our = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+workis = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+never = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+over = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+workit2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+harder2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+makeit2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+better2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+doit2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+faster2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+makesus = pygame.mixer.Sound("sounds/hbfs/101_work_it.wav")
+stronger2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+morethan2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+ever2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+hour2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+after2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+our2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+workis2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+never2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+over2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+
+# add sound file
+
+sound_pins = {
+    18: workit,
+    23: harder,
+    24: harder,
+    25: workit,
+    12: workit,
+    16: workit,
+    20: workit,
+    21: workit,
+     4: workit,
+    17: workit,
+    27: workit,
+    22: workit,
+     5: workit,
+     6: workit,
+    #add pin number and sound
+}
+
+labels = {
+    18:"workit",
+    23:" harder",
+    24:" harder",
+    25:"workit",
+    12:"workit",
+    16:"workit",
+    20:"workit",
+    21: "workit",
+     4: "workit",
+    17: "workit",
+    27: "workit",
+    22: "workit",
+     5: "workit",
+     6: "workit",
+}
+
+def play(pin):
+    sound = sound_pins[pin]
+    print("playing note from pin %s" % pin)
+    sound.play()
+    label = labels[pin]
+    newlabel = boothlabel.render(label, 1, WHITE)
+    screen.blit(newlabel, (bounds.centerx, bounds.centery - bounds.height / 4))
+    GPIO.setup(19, GPIO.OUT)
+    GPIO.output(19, GPIO.LOW)
+   
+for pin in sound_pins:
+    GPIO.setup(pin, GPIO.IN, GPIO.PUD_UP)
+    GPIO.add_event_detect(pin, GPIO.FALLING, play, 100)
+
+print("ready")
+
+direction = "down"
+
+
+while True: # main game loop
+    #pass
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
+    screen.fill(WHITE)
+    pygame.draw.rect(screen, WHITE, rect)
+    dlabel = dafttext.render("d", 1, PURPLE)
+    pygame.draw.rect(screen, WHITE, rectA)
+    alabel = dafttext.render("a", 1, ORANGE)
+    pygame.draw.rect(screen, WHITE, rectB)
+    flabel = dafttext.render("f", 1, GREEN)
+    pygame.draw.rect(screen, WHITE, rectC)
+    tlabel = dafttext.render("t", 1, BLUE)
+    pygame.draw.rect(screen, WHITE, rect2)
+    boothtext = boothlabel.render("BOOTH", 1, BLACK)
+    
+    for  x in range (0, 3):
+         pygame.draw.circle(screen, BLUE, (x, 30), 20, 0)
+
+    if direction == "down":
+         rect2.centery += 1
+    elif direction == "up":
+         rect2.centery -= 1
+
+    if rect2.bottom > size[1]:
+        direction = "up"
+    if rect2.top < 0:
+        direction = "down"
+   #daft letters
+    if direction == "down":
+         rect.centery += 1
+    elif direction == "up":
+         rect.centery -= 1
+
+    if rect.bottom > size[1]:
+        direction = "up"
+    if rect.top < 0:
+        direction = "down"
+
+    if direction == "down":
+         rectA.centery += 1
+    elif direction == "up":
+         rectA.centery -= 1
+
+    if rectA.bottom > size[1]:
+        direction = "up"
+    if rectA.top < 0:
+        direction = "down"
+
+    if direction == "down":
+         rectB.centery += 1
+    elif direction == "up":
+         rectB.centery -= 1
+
+    if rectB.bottom > size[1]:
+        direction = "up"
+    if rectB.top < 0:
+        direction = "down"
+
+    if direction == "down":
+         rectC.centery += 1
+    elif direction == "up":
+         rectC.centery -= 1
+
+    if rectC.bottom > size[1]:
+        direction = "up"
+    if rectC.top < 0:
+        direction = "down"
+
+   
+    screen.blit(dlabel, rect)
+    screen.blit(alabel, rectA)
+    screen.blit(flabel, rectB)
+    screen.blit(tlabel, rectC)
+    screen.blit(boothtext, rect2)
+    clock.tick(FPS)
+    pygame.display.update()

@@ -1,0 +1,146 @@
+#Daft Booth v0.2
+#Hacklab North Boynton
+
+import pygame, sys
+#import time
+from pygame.locals import *
+import pygame.mixer
+from RPi import GPIO
+
+pygame.init()
+pygame.mixer.init()
+
+FPS = 24
+clock = pygame.time.Clock()
+#text
+dbtext = pygame.font.SysFont("monospace", 20)
+dbtext.set_bold(True)
+labeltext = pygame.font.SysFont("monospace", 40)
+
+size = (500, 500)
+screen = pygame.display.set_mode((size))
+bounds = screen.get_rect()
+# set up the colors
+BLACK = (  0,   0,   0)
+WHITE = (255, 255, 255)
+RED   = (255,   0,   0)
+GREEN = (  0, 255,   0)
+BLUE  = (  0,   0, 255)
+
+rect = pygame.Rect(30, 30, 64, 64)
+#image = pygame.image.load("image.png")
+
+pygame.display.set_caption('DAFT BOOTH')
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+workit = pygame.mixer.Sound("sounds/hbfs/101_work_it.wav")
+harder = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+makeit = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+better = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+doit = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+faster = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+makes = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+stronger = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+morethan = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+ever = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+hour = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+after = pygame.mixer.Sound("sounds/hbfs/101_work_it.wav")
+our = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+workis = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+never = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+over = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+workit2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+harder2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+makeit2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+better2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+doit2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+faster2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+makesus = pygame.mixer.Sound("sounds/hbfs/101_work_it.wav")
+stronger2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+morethan2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+ever2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+hour2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+after2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+our2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+workis2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+never2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+over2 = pygame.mixer.Sound("sounds/hbfs/102_harder.wav")
+
+# add sound file
+
+sound_pins = {
+    18: workit,
+    23: harder,
+    24: harder,
+    25: workit,
+    12: workit,
+    16: workit,
+    20: workit,
+    21: workit,
+    17: workit,
+    27: workit,
+    22: workit,
+     5: workit,
+     6: workit,
+    #add pin number and sound
+}
+
+labels = {
+    18:"workit",
+    23:"harder",
+    24:"harder",
+    25:"workit",
+    12:"workit",
+    16:"workit",
+    20:"workit",
+    21:"workit",
+    17:"workit",
+    27: "workit",
+    22: "workit",
+     5: "workit",
+     6: "workit",
+}
+
+def play(pin):
+    sound = sound_pins[pin]
+    print("playing note from pin %s" % pin)
+    sound.play()
+    label = labels[pin]
+    newlabel = labeltext.render(label, 1, WHITE)
+    screen.blit(newlabel, (bounds.centerx, bounds.centery - bounds.height / 4))
+
+for pin in sound_pins:
+    GPIO.setup(pin, GPIO.IN, GPIO.PUD_DOWN)
+    GPIO.add_event_detect(pin, GPIO.FALLING, play, 100)
+
+print("ready")
+
+direction = "down"
+
+
+while True: # main game loop
+    #pass
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
+    screen.fill(BLACK)
+    pygame.draw.rect(screen, BLACK, rect)
+    label = dbtext.render("DAFT BOOTH", 1, WHITE)
+	
+    if direction == "down":
+	 rect.centery += 1
+    elif direction == "up":
+	 rect.centery -= 1
+
+    if rect.bottom > size[1]:
+	direction = "up"
+    if rect.top < 0:
+	direction = "down"
+
+    screen.blit(label, rect)
+    clock.tick(FPS)
+    pygame.display.update()

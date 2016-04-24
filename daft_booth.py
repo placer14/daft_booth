@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 from Adafruit_MCP230xx import Adafruit_MCP230XX
 
 FULL_PATH = './'
+OUTPUT = 0
 ENABLE = 1
 ALT_SOUND_TOGGLE = False
 HALT_FURTHER_TOGGLE = False
@@ -20,45 +21,46 @@ def main():
     pygame.mixer.music.play(-1)
     soundboard = setup_soundboard_bus()
     control = setup_control_bus()
+    lights = setup_light_bus()
 
     print('Running...')
     try:
         while True:
-            if (soundboard.input(0) == 0):
-                work_it().play()
-            if (soundboard.input(1) == 0):
-                harder().play()
-            if (soundboard.input(2) == 0):
-                make_it().play()
-            if (soundboard.input(3) == 0):
-                better().play()
-            if (soundboard.input(4) == 0):
-                do_it().play()
-            if (soundboard.input(5) == 0):
-                faster().play()
-            if (soundboard.input(6) == 0):
-                makes_us().play()
-            if (soundboard.input(7) == 0):
-                stronger().play()
-            if (soundboard.input(8) == 0):
-                more_than().play()
-            if (soundboard.input(9) == 0):
-                ever().play()
-            if (soundboard.input(10) == 0):
-                hour().play()
-            if (soundboard.input(11) == 0):
-                after().play()
-            if (soundboard.input(12) == 0):
-                our().play()
-            if (soundboard.input(13) == 0):
-                work_is().play()
-            if (soundboard.input(14) == 0):
-                never().play()
-            if (soundboard.input(15) == 0):
-                over().play()
-            check_toggle_sounds(control)
-            check_toggle_background_track(control)
-            print(pygame.mixer.music.get_busy())
+            #if (soundboard.input(0) == 0):
+                #work_it().play()
+            #if (soundboard.input(1) == 0):
+                #harder().play()
+            #if (soundboard.input(2) == 0):
+                #make_it().play()
+            #if (soundboard.input(3) == 0):
+                #better().play()
+            #if (soundboard.input(4) == 0):
+                #do_it().play()
+            #if (soundboard.input(5) == 0):
+                #faster().play()
+            #if (soundboard.input(6) == 0):
+                #makes_us().play()
+            #if (soundboard.input(7) == 0):
+                #stronger().play()
+            #if (soundboard.input(8) == 0):
+                #more_than().play()
+            #if (soundboard.input(9) == 0):
+                #ever().play()
+            #if (soundboard.input(10) == 0):
+                #hour().play()
+            #if (soundboard.input(11) == 0):
+                #after().play()
+            #if (soundboard.input(12) == 0):
+                #our().play()
+            #if (soundboard.input(13) == 0):
+                #work_is().play()
+            #if (soundboard.input(14) == 0):
+                #never().play()
+            #if (soundboard.input(15) == 0):
+                #over().play()
+            #check_toggle_sounds(control)
+            #check_toggle_background_track(control)
+            #print(pygame.mixer.music.get_busy())
     except KeyboardInterrupt:
         cleanup()
         exit(1)
@@ -151,7 +153,7 @@ def get_sound(sound_A, sound_B):
         return sound_A
     else:
         return sound_B
-    
+
 def is_alt_sound_toggled():
     return ALT_SOUND_TOGGLE
 
@@ -189,12 +191,32 @@ def setup_soundboard_bus():
     soundboard.pullup(15, ENABLE)
     return soundboard
 
+def setup_light_bus():
+    lights = Adafruit_MCP230XX(address=LIGHT_ADDR, num_gpios=16)
+    lights.config(0, OUTPUT)
+    lights.config(1, OUTPUT)
+    lights.config(2, OUTPUT)
+    lights.config(3, OUTPUT)
+    lights.config(4, OUTPUT)
+    lights.config(5, OUTPUT)
+    lights.config(6, OUTPUT)
+    lights.config(7, OUTPUT)
+    lights.config(8, OUTPUT)
+    lights.config(9, OUTPUT)
+    lights.config(10, OUTPUT)
+    lights.config(11, OUTPUT)
+    lights.config(12, OUTPUT)
+    lights.config(13, OUTPUT)
+    lights.config(14, OUTPUT)
+    lights.config(15, OUTPUT)
+    return lights
+
 def setup_control_bus():
     control = Adafruit_MCP230XX(address=CONTROL_ADDR, num_gpios=16)
     control.pullup(0, ENABLE)
     control.pullup(1, ENABLE)
     return control
-    
+
 def cleanup():
     GPIO.cleanup()
 
