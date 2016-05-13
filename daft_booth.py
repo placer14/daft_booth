@@ -24,51 +24,69 @@ def main():
     print('Running...')
     try:
         while True:
-            if (soundboard.input(0) == 0):
+            pin_0 = soundboard.input(0)
+            pin_1 = soundboard.input(1)
+            pin_2 = soundboard.input(2)
+            pin_3 = soundboard.input(3)
+            pin_4 = soundboard.input(4)
+            pin_5 = soundboard.input(5)
+            pin_6 = soundboard.input(6)
+            pin_7 = soundboard.input(7)
+            pin_8 = soundboard.input(8)
+            pin_9 = soundboard.input(9)
+            pin_10 = soundboard.input(10)
+            pin_11 = soundboard.input(11)
+            pin_12 = soundboard.input(12)
+            pin_13 = soundboard.input(13)
+            pin_14 = soundboard.input(14)
+            pin_15 = soundboard.input(15)
+            if (pin_0 == 0):
                 work_it().play()
-            if (soundboard.input(1) == 0):
+            if (pin_1 == 0):
                 harder().play()
-            if (soundboard.input(2) == 0):
+            if (pin_2 == 0):
                 make_it().play()
-            if (soundboard.input(3) == 0):
+            if (pin_3 == 0):
                 better().play()
-            if (soundboard.input(4) == 0):
+            if (pin_4 == 0):
                 do_it().play()
-            if (soundboard.input(5) == 0):
+            if (pin_5 == 0):
                 faster().play()
-            if (soundboard.input(6) == 0):
+            if (pin_6 == 0):
                 makes_us().play()
-            if (soundboard.input(7) == 0):
+            if (pin_7 == 0):
                 stronger().play()
-            if (soundboard.input(8) == 0):
+            if (pin_8 == 0):
                 more_than().play()
-            if (soundboard.input(9) == 0):
+            if (pin_9 == 0):
                 ever().play()
-            if (soundboard.input(10) == 0):
+            if (pin_10 == 0):
                 hour().play()
-            if (soundboard.input(11) == 0):
+            if (pin_11 == 0):
                 after().play()
-            if (soundboard.input(12) == 0):
+            if (pin_12 == 0):
                 our().play()
-            if (soundboard.input(13) == 0):
+            if (pin_13 == 0):
                 work_is().play()
-            if (soundboard.input(14) == 0):
+            if (pin_14 == 0):
                 never().play()
-            if (soundboard.input(15) == 0):
+            if (pin_15 == 0):
                 over().play()
-            check_toggle_sounds(control)
-            check_toggle_background_track(control)
-            print(pygame.mixer.music.get_busy())
+            pin_16 = check_toggle_sounds(control)
+            pin_17 = check_toggle_background_track(control)
+            print("%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s" % (pin_0, pin_1, pin_2, pin_3, pin_4, pin_5, pin_6, pin_7, pin_8, pin_9, pin_10, pin_11, pin_12, pin_13, pin_14, pin_15, pin_16, pin_17))
     except KeyboardInterrupt:
         cleanup()
         exit(1)
 
 def check_toggle_sounds(control):
     global HALT_FURTHER_TOGGLE
-    if (control.input(0) == 0):
+    pin_16 = control.input(0)
+    if (pin_16 == 0):
         toggle_alt_sounds()
     else:
         HALT_FURTHER_TOGGLE = False
+    return pin_16
 
 def toggle_alt_sounds():
     global ALT_SOUND_TOGGLE
@@ -81,10 +99,12 @@ def toggle_alt_sounds():
 
 def check_toggle_background_track(control):
     global HALT_FURTHER_PAUSE_PLAY
-    if (control.input(1) == 0):
+    pin_17 = control.input(1)
+    if (pin_17 == 0):
         toggle_background_track()
     else:
         HALT_FURTHER_PAUSE_PLAY = False
+    return pin_17
 
 def toggle_background_track():
     global HALT_FURTHER_PAUSE_PLAY
@@ -151,7 +171,7 @@ def get_sound(sound_A, sound_B):
         return sound_A
     else:
         return sound_B
-    
+
 def is_alt_sound_toggled():
     return ALT_SOUND_TOGGLE
 
@@ -163,11 +183,12 @@ def load_sound(file):
 def setup():
     pygame.mixer.init(buffer=2048)
     pygame.init()
+    return True
 
     # Just need screen for development, in order to easily get keyboard events.
-    screen = pygame.display.set_mode([300, 100])
-    screen.fill([255, 255, 255])
-    return screen
+    # screen = pygame.display.set_mode([300, 100])
+    # screen.fill([255, 255, 255])
+    # return screen
 
 def setup_soundboard_bus():
     soundboard = Adafruit_MCP230XX(address=SOUNDBOARD_ADDR, num_gpios=16)
@@ -194,7 +215,7 @@ def setup_control_bus():
     control.pullup(0, ENABLE)
     control.pullup(1, ENABLE)
     return control
-    
+
 def cleanup():
     GPIO.cleanup()
 
